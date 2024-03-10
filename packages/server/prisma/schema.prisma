@@ -15,7 +15,7 @@ datasource db {
 
 model MenuItem {
   id String @id @default(auto()) @map("_id") @db.ObjectId
-  name String
+  name String @unique
   type String
   description String
   basePrice Float
@@ -23,4 +23,24 @@ model MenuItem {
   nonVeg Boolean
   egg Boolean
   stock Int
+}
+
+model Order {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  createdAt DateTime @default(now())
+  items OrderItem[]
+  table Int
+  orderNo Int
+  confirmed Boolean @default(false)
+  served Boolean @default(false)
+  paid Boolean @default(false)
+  paymentForm String?
+  phone String
+}
+
+type OrderItem {
+  id String
+  name String
+  quantity Int
+  additional String?
 }
