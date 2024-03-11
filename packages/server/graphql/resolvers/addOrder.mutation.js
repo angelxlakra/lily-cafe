@@ -15,22 +15,23 @@ const addOrder = async (parent, args) => {
         quantity: item.quantity,
         name: menuItem.name,
       };
-      console.log({ newItem });
       return newItem;
     })
   );
-  console.log({ items });
-  const today = moment().utc().format("YYYY-MM-DD, h:mm:ss");
+  const today = moment().format("YYYY-MM-DD");
+  const utcOffset = moment().utcOffset();
+  console.log({utcOffset});
+  const utcToday = moment(today).add(-utcOffset, 'minutes')
   console.log({
-    gte: new Date(today),
-    lt: new Date(moment(today).utc().add(1, "d").format("YYYY-MM-DD, h:mm:ss")),
-
+    now: moment().add(-utcOffset, 'minutes').format("YYYY-MM-DD, LTS"),
+    gte: utcToday.format("YYYY-MM-DD, LTS"),
+    lt: moment(utcToday).add(1, "d").format("YYYY-MM-DD, LTS"),
   });
   const todayOrdersCount = await prisma.order.count({
     where: {
       createdAt: {
-        gte: new Date(today),
-        lt: new Date(moment(today).utc().add(1, "d").format("YYYY-MM-DD, h:mm:ss")),
+        gte: new Date(utcToday),
+        lt: new Date(moment(utcToday).add(1, "d")),
       },
     },
   });
