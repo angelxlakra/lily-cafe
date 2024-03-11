@@ -1,8 +1,6 @@
-import { PrismaClient } from "@prisma/client";
 import moment from "moment";
-const prisma = new PrismaClient();
 
-const addOrder = async (parent, args) => {
+const addOrder = async (parent, args, { prisma, pubsub }) => {
   const order = args.order;
   const items = await Promise.all(
     order.items.map(async (item) => {
@@ -20,11 +18,11 @@ const addOrder = async (parent, args) => {
   );
   const today = moment().format("YYYY-MM-DD"); // time for today at 12:00 AM
   const utcOffset = moment().utcOffset();
-  console.log({utcOffset});           // 330 minutes ~ +5:30 hours
-  const utcToday = moment(today).add(-utcOffset, 'minutes') // subtract +5:30 hours to get UTC time of today
+  console.log({ utcOffset }); // 330 minutes ~ +5:30 hours
+  const utcToday = moment(today).add(-utcOffset, "minutes"); // subtract +5:30 hours to get UTC time of today
   console.log({
-    // Yahaan pe format sirf time dekhne ke lie kiya hua hai 
-    now: moment().add(-utcOffset, 'minutes').format("YYYY-MM-DD, LTS"),
+    // Yahaan pe format sirf time dekhne ke lie kiya hua hai
+    now: moment().add(-utcOffset, "minutes").format("YYYY-MM-DD, LTS"),
     gte: utcToday.format("YYYY-MM-DD, LTS"),
     lt: moment(utcToday).add(1, "d").format("YYYY-MM-DD, LTS"),
   });
@@ -45,9 +43,10 @@ const addOrder = async (parent, args) => {
       orderNo: todayOrdersCount + 1,
     },
   });
+  // TODO: after creating order, we will decrease stock by quantity when order is confirmed
 
-  // after creating order, we will decrease stock by quantity when order is confirmed
-
+  
+  pubsub.publish("newOrder", {createdOrder: response});
   return response;
 };
 

@@ -1,9 +1,6 @@
-import { PrismaClient } from "@prisma/client";
 import allMenuItems from "./allMenuItems.query.js";
 import addMenuItem from "./addMenuItem.mutation.js";
 import addOrder from "./addOrder.mutation.js";
-
-const prisma = new PrismaClient();
 
 const resolvers = {
   Query: {
@@ -13,6 +10,16 @@ const resolvers = {
     addMenuItem,
     addOrder,
   },
+  Subscription: {
+    newOrder: {
+      subscribe: (parent, {}, {pubsub}) => {
+        return pubsub.asyncIterator("newOrder");
+      },
+      resolve: (payload) => {
+        return payload.createdOrder;
+      }
+    }
+  }
 };
 
 export default resolvers;

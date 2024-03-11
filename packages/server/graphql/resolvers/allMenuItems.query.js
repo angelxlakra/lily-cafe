@@ -1,7 +1,6 @@
-import { PrismaClient } from "@prisma/client";
-const prisma = new PrismaClient();
 
-const allMenuItems = async () => {
+
+const allMenuItems = async (parent, {}, {prisma}) => {
   const menuItems = await prisma.menuItem.findMany();
   return menuItems;
 };
