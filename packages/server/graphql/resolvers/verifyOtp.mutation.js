@@ -14,10 +14,10 @@ const verifyOtp = async (parent, args) => {
         .create({ to: phone, code })
     
     console.log({verification})
-    if (verification.status === "approved") {
-        return { status: 200, message: "OTP verified!" }
-    } 
-    return { status: 400, message: "Wrong OTP!" }
+    return {
+        status: verification.status === 'approved' ? 200 : 400,
+        message: verification.status === 'approved' ? "OTP verified!" : "Wrong OTP!"
+    }
 }
 
 export default verifyOtp;
