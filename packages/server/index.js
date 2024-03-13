@@ -4,6 +4,10 @@ import schema from "./graphql/schema.js";
 import { PubSub } from "graphql-subscriptions";
 import { PrismaClient } from "@prisma/client";
 
+import 'dotenv/config'
+
+
+
 const pubsub = new PubSub();
 const prisma = new PrismaClient();
 // Create a Yoga instance with a GraphQL schema.
